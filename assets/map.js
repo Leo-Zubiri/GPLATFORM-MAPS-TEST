@@ -1,46 +1,44 @@
 let map;
 let marker;
 let infoWindow;
+let geocoder;
+let placeAutocomplete;
 
 async function initMap() {
-  // Carga las librerías necesarias
-  const [{ Map }, { AdvancedMarkerElement }, placesLibrary] = await Promise.all([
+  const [{ Map }, { AdvancedMarkerElement }] = await Promise.all([
     google.maps.importLibrary("maps"),
     google.maps.importLibrary("marker"),
-    google.maps.importLibrary("places"),
   ]);
 
+  geocoder = new google.maps.Geocoder();
 
-  // Crea el mapa
-  map = new google.maps.Map(document.getElementById("map"), {
+  // Crear mapa
+  map = new Map(document.getElementById("map"), {
     center: { lat: 19.432608, lng: -99.133209 },
     zoom: 13,
-    mapId: "4504f8b37365c3d0",
     mapTypeControl: false,
+    mapId: "1d5ecc631751ef8917386781", // tu Map ID válido
   });
 
-  // Crea el nuevo componente de autocompletado
-  const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement({
-    locationBias: map.getCenter(), // bias inicial
+  // Crear AdvancedMarkerElement
+  marker = new AdvancedMarkerElement({
+    map,
+    position: map.getCenter(),
   });
 
+  infoWindow = new google.maps.InfoWindow();
+
+  // Crear componente de autocompletado
+  placeAutocomplete = new google.maps.places.PlaceAutocompleteElement({
+    locationBias: map.getCenter(),
+  });
   placeAutocomplete.id = "place-autocomplete-input";
   placeAutocomplete.startFetchingOnFocus = true;
-  const card = document.getElementById("place-autocomplete-card");
 
+  const card = document.getElementById("place-autocomplete-card");
   card.appendChild(placeAutocomplete);
 
-  // Inserta el input dentro del card y agrégalo al mapa
-  //map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
-
-
-  // Crea el marcador y el InfoWindow
-  marker = new google.maps.marker.AdvancedMarkerElement({
-    map,
-  });
-  infoWindow = new google.maps.InfoWindow({});
-
-  // Evento cuando el usuario selecciona un lugar
+  // Evento cuando se selecciona un lugar
   placeAutocomplete.addEventListener("gmp-select", async (event) => {
     const placePrediction = event.placePrediction;
     const place = await placePrediction.toPlace();
@@ -49,7 +47,7 @@ async function initMap() {
       fields: ["displayName", "formattedAddress", "location", "viewport"],
     });
 
-    // Centra el mapa en el lugar seleccionado
+    // Centrar mapa
     if (place.viewport) {
       map.fitBounds(place.viewport);
     } else {
@@ -57,23 +55,46 @@ async function initMap() {
       map.setZoom(17);
     }
 
-    // Contenido del InfoWindow
+    // Mover marcador
+    marker.position = place.location;
+
+    // Mostrar InfoWindow
     const content = `
-      <div id="infowindow-content">
+      <div>
         <strong>${place.displayName}</strong><br>
         ${place.formattedAddress}
       </div>
     `;
-
     updateInfoWindow(content, place.location);
-    marker.position = place.location;
+  });
 
-    console.log("Dirección:", place.formattedAddress);
-    console.log("Coordenadas:", place.location.toJSON());
+  // --- Mover marcador haciendo click en el mapa ---
+  map.addListener("click", (e) => {
+    const latLng = e.latLng;
+
+    // Mover marcador
+    marker.position = latLng;
+
+    // Geocoding inverso para obtener dirección
+    geocoder.geocode({ location: latLng }, (results, status) => {
+      if (status === "OK" && results[0]) {
+        // Actualiza input del autocomplete
+        placeAutocomplete.value = results[0].formatted_address;
+
+        // Actualiza InfoWindow
+        const content = `
+          <div>
+            <strong>${results[0].formatted_address}</strong><br>
+            Lat: ${latLng.lat().toFixed(6)}, Lng: ${latLng.lng().toFixed(6)}
+          </div>
+        `;
+        updateInfoWindow(content, latLng);
+      }
+    });
   });
 }
 
-// Helper para actualizar el InfoWindow
+// Helper InfoWindow
 function updateInfoWindow(content, position) {
   infoWindow.setContent(content);
   infoWindow.setPosition(position);
