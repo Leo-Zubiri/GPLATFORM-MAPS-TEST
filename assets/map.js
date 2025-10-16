@@ -107,4 +107,14 @@ function updateInfoWindow(content, position) {
   });
 }
 
+function getCurrentMarkerPosition() {
+  if (!marker) return null;
+
+  const pos = marker.position; // { lat: ..., lng: ... }
+  return {
+    lat: pos.lat,
+    lng: pos.lng,
+  };
+}
+
 window.initMap = initMap;
