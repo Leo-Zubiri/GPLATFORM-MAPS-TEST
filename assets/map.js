@@ -24,8 +24,9 @@ async function initMap() {
 
   // Crear AdvancedMarkerElement
   marker = new AdvancedMarkerElement({
-    map,
+    map: map,
     position: map.getCenter(),
+    gmpDraggable: true // Permite mover el marcador
   });
 
   infoWindow = new google.maps.InfoWindow();
