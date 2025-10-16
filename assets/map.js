@@ -18,6 +18,8 @@ async function initMap() {
     zoom: 13,
     mapTypeControl: false,
     mapId: "1d5ecc631751ef8917386781", // tu Map ID válido
+    streetViewControl: false, // Deshabilita Street View
+    fullscreenControl: true,  // opcional: controlar fullscreen
   });
 
   // Crear AdvancedMarkerElement
