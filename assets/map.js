@@ -28,9 +28,11 @@ async function initMap() {
   placeAutocomplete.startFetchingOnFocus = true;
   const card = document.getElementById("place-autocomplete-card");
 
-  // Inserta el input dentro del card y agrégalo al mapa
   card.appendChild(placeAutocomplete);
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
+
+  // Inserta el input dentro del card y agrégalo al mapa
+  //map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
+
 
   // Crea el marcador y el InfoWindow
   marker = new google.maps.marker.AdvancedMarkerElement({

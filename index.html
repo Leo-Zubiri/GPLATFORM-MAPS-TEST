@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script async
-        src="https://maps.googleapis.com/maps/api/js?key=BROWSER_API_KEY=async&callback=initMap&libraries=maps,marker,places">
+        src="https://maps.googleapis.com/maps/api/js?key=BROWSER_API_KEY&loading=async&callback=initMap&libraries=maps,marker,places">
     </script>
 </head>
-<body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; flex-direction: column;">
     <!-- Tarjeta contenedora del autocomplete -->
-    <div id="place-autocomplete-card"></div>
+    <div id="place-autocomplete-card" style="margin-bottom: 20px;"></div>
     <div id="map" style="width: 500px; height: 500px;"></div>
     <script src="./assets/map.js" async defer></script>
 </body>
